@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GG Makete — Figure i Modeli po Želji</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #161616;
+  --green: #4a7c3f;
+  --green-bright: #6ab04c;
+  --green-dim: #2d4d25;
+  --green-glow: rgba(74,124,63,0.15);
+  --text: #c8e6c0;
+  --text-dim: #6b8f64;
+  --text-muted: #3d5c38;
+  --border: rgba(74,124,63,0.25);
+  --border-bright: rgba(74,124,63,0.6);
+  --stencil: 'Bebas Neue', sans-serif;
+  --body: 'Rajdhani', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* SCANLINE OVERLAY */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 9999;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+}
+
+/* TANK SVG BACKGROUND */
+.tank-bg {
+  position: fixed;
+  bottom: -20px; right: -40px;
+  width: 680px; opacity: 0.04;
+  z-index: 0; pointer-events: none;
+  filter: invert(1) sepia(1) saturate(2) hue-rotate(80deg);
+}
+
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,10,10,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 5%;
+  height: 58px;
+}
+.nav-logo {
+  font-family: var(--stencil);
+  font-size: 1.7rem;
+  letter-spacing: 0.12em;
+  color: var(--green-bright);
+  text-decoration: none;
+  text-shadow: 0 0 20px rgba(106,176,76,0.4);
+}
+.nav-logo span { color: var(--text-dim); font-size: 1rem; letter-spacing: 0.05em; margin-left: 0.5rem; vertical-align: middle; }
+.nav-links { display: flex; gap: 2.5rem; list-style: none; }
+.nav-links a {
+  font-family: var(--stencil);
+  letter-spacing: 0.1em;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--green-bright); }
+.nav-ig {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.8rem; color: var(--text-dim);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.75rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+  font-family: var(--body);
+  letter-spacing: 0.05em;
+}
+.nav-ig:hover { border-color: var(--green-bright); color: var(--green-bright); }
+
+/* HERO */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 92vh;
+  display: flex; align-items: center;
+  padding: 0 5%;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 60% at 20% 50%, rgba(74,124,63,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-content { position: relative; z-index: 2; max-width: 700px; }
+.hero-eyebrow {
+  font-family: var(--stencil);
+  letter-spacing: 0.25em;
+  font-size: 0.85rem;
+  color: var(--green);
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block; width: 40px; height: 1px;
+  background: var(--green);
+}
+.hero h1 {
+  font-family: var(--stencil);
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  margin-bottom: 0.3em;
+}
+.hero h1 .accent {
+  color: var(--green-bright);
+  text-shadow: 0 0 40px rgba(106,176,76,0.3);
+}
+.hero-sub {
+  font-size: 1.15rem;
+  color: var(--text-dim);
+  max-width: 480px;
+  margin-bottom: 3rem;
+  line-height: 1.7;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+}
+.hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn {
+  font-family: var(--stencil);
+  letter-spacing: 0.12em;
+  font-size: 1rem;
+  padding: 0.75rem 2.2rem;
+  text-decoration: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-block;
+  border: none;
+}
+.btn-primary {
+  background: var(--green);
+  color: #0a0a0a;
+}
+.btn-primary:hover {
+  background: var(--green-bright);
+  box-shadow: 0 0 24px rgba(106,176,76,0.35);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--border-bright);
+}
+.btn-ghost:hover { color: var(--green-bright); border-color: var(--green-bright); }
+
+/* GRID DIVIDER */
+.divider {
+  height: 1px; background: var(--border);
+  margin: 0 5%;
+  position: relative;
+}
+.divider::before {
+  content: '■ GG MAKETE ■';
+  font-family: var(--stencil);
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  color: var(--green-dim);
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg);
+  padding: 0 1rem;
+}
+
+/* SECTIONS */
+.section {
+  position: relative; z-index: 1;
+  padding: 5rem 5%;
+  max-width: 1300px; margin: 0 auto;
+}
+.section-label {
+  font-family: var(--stencil);
+  letter-spacing: 0.25em;
+  font-size: 0.75rem;
+  color: var(--green);
+  margin-bottom: 0.6rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.section-label::after { content: ''; flex: 1; max-width: 60px; height: 1px; background: var(--green-dim); }
+.section-title {
+  font-family: var(--stencil);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.section-desc { color: var(--text-dim); font-size: 1rem; font-weight: 300; max-width: 500px; margin-bottom: 3rem; line-height: 1.7; }
+
+/* GALLERY */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 3px;
+}
+.gallery-item {
+  position: relative;
+  aspect-ratio: 16/10;
+  background: var(--bg3);
+  overflow: hidden;
+  cursor: pointer;
+}
+.gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s, filter 0.3s;
+  filter: saturate(0.7) brightness(0.85);
+}
+.gallery-item:hover img { transform: scale(1.06); filter: saturate(1) brightness(1); }
+
+/* MP4 video items */
+.gallery-item video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.gallery-item video::-webkit-media-controls { display: none !important; }
+.gallery-item:hover video { filter: brightness(1.05); }
+
+/* YouTube / iframe embeds */
+.gallery-item iframe {
+  width: 100%; height: 100%;
+  border: none; display: block;
+  pointer-events: none;
+}
+.gallery-item:hover iframe { pointer-events: auto; }
+
+/* Play button overlay for local videos */
+.play-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.35);
+  transition: background 0.2s;
+  pointer-events: none;
+}
+.gallery-item:hover .play-overlay { background: rgba(0,0,0,0.1); }
+.play-btn {
+  width: 52px; height: 52px;
+  border: 2px solid var(--green-bright);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, background 0.2s;
+}
+.gallery-item:hover .play-btn {
+  transform: scale(1.1);
+  background: rgba(74,124,63,0.25);
+}
+.play-btn svg { margin-left: 3px; }
+
+.gallery-item .overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(10,10,10,0.85) 0%, transparent 50%);
+  opacity: 0; transition: opacity 0.3s;
+  display: flex; align-items: flex-end;
+  padding: 1rem;
+  pointer-events: none;
+}
+.gallery-item:hover .overlay { opacity: 1; }
+.overlay-text {
+  font-family: var(--stencil);
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  color: var(--green-bright);
+}
+/* Placeholder tiles */
+.gallery-placeholder {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 0.5rem;
+}
+.gallery-placeholder svg { opacity: 0.15; }
+.gallery-placeholder span {
+  font-family: var(--stencil);
+  font-size: 0.7rem; letter-spacing: 0.15em;
+  color: var(--text-muted);
+}
+
+/* Lightbox */
+.lightbox {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.95);
+  align-items: center; justify-content: center;
+  cursor: zoom-out;
+}
+.lightbox.open { display: flex; }
+.lightbox-inner {
+  max-width: 90vw; max-height: 90vh;
+  position: relative;
+}
+.lightbox-inner video,
+.lightbox-inner iframe {
+  max-width: 90vw; max-height: 85vh;
+  width: 80vw; aspect-ratio: 16/9;
+  border: 1px solid var(--border);
+}
+.lightbox-close {
+  position: absolute; top: -2.5rem; right: 0;
+  font-family: var(--stencil); letter-spacing: 0.1em;
+  font-size: 0.85rem; color: var(--text-dim);
+  cursor: pointer; background: none; border: none;
+  transition: color 0.2s;
+}
+.lightbox-close:hover { color: var(--green-bright); }
+
+/* INSTAGRAM STRIP */
+.ig-strip {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 1.5rem 5%;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.ig-strip-left { display: flex; align-items: center; gap: 1rem; }
+.ig-icon {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.ig-strip-text p { font-family: var(--stencil); letter-spacing: 0.08em; color: var(--text); font-size: 1rem; }
+.ig-strip-text span { font-size: 0.82rem; color: var(--text-dim); font-weight: 300; }
+.ig-strip a.btn { font-size: 0.85rem; padding: 0.55rem 1.5rem; }
+
+/* HOW IT WORKS */
+.process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+.process-step {
+  background: var(--bg2);
+  padding: 2rem 1.5rem;
+  position: relative;
+}
+.process-step::before {
+  content: attr(data-num);
+  font-family: var(--stencil);
+  font-size: 4rem;
+  color: var(--green-dim);
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.process-step h3 {
+  font-family: var(--stencil);
+  letter-spacing: 0.08em;
+  font-size: 1.1rem;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.process-step p { font-size: 0.9rem; color: var(--text-dim); font-weight: 300; line-height: 1.6; }
+
+/* ORDER FORM */
+.order-wrap {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative; z-index: 1;
+}
+.order-inner {
+  max-width: 1300px; margin: 0 auto;
+  padding: 5rem 5%;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: start;
+}
+.order-info h2 {
+  font-family: var(--stencil);
+  font-size: clamp(2rem,4vw,3rem);
+  letter-spacing: 0.06em;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+.order-info p { color: var(--text-dim); font-weight: 300; line-height: 1.7; margin-bottom: 2rem; }
+.info-block {
+  border: 1px solid var(--border);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  background: var(--bg3);
+}
+.info-block h4 {
+  font-family: var(--stencil);
+  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+.info-block p { font-size: 0.88rem; color: var(--text-dim); margin: 0; line-height: 1.6; }
+.info-block code {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* FORM */
+.form-grid { display: flex; flex-direction: column; gap: 1rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-group label {
+  font-family: var(--stencil);
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  color: var(--green);
+}
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 0.7rem 1rem;
+  font-family: var(--body);
+  font-size: 0.95rem;
+  font-weight: 400;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  border-radius: 1px;
+  -webkit-appearance: none;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 2px rgba(74,124,63,0.15);
+}
+.form-group input::placeholder,
+.form-group textarea::placeholder { color: var(--text-muted); }
+.form-group select option { background: #111; color: var(--text); }
+.form-group textarea { resize: vertical; min-height: 110px; }
+.payment-select {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;
+  margin: 0.25rem 0;
+}
+.pay-option { display: none; }
+.pay-label {
+  border: 1px solid var(--border);
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 0.6rem;
+  font-family: var(--stencil);
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  transition: all 0.2s;
+  user-select: none;
+}
+.pay-option:checked + .pay-label {
+  border-color: var(--green);
+  color: var(--green-bright);
+  background: var(--green-glow);
+}
+.pay-dot {
+  width: 10px; height: 10px;
+  border: 1px solid currentColor;
+  border-radius: 50%; flex-shrink: 0;
+  position: relative;
+}
+.pay-option:checked + .pay-label .pay-dot::after {
+  content: ''; position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 5px; height: 5px;
+  background: var(--green-bright);
+  border-radius: 50%;
+}
+.btn-submit {
+  font-family: var(--stencil);
+  letter-spacing: 0.15em;
+  font-size: 1.05rem;
+  padding: 1rem;
+  background: var(--green);
+  color: #0a0a0a;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.2s, box-shadow 0.2s;
+  margin-top: 0.5rem;
+  border-radius: 1px;
+}
+.btn-submit:hover {
+  background: var(--green-bright);
+  box-shadow: 0 0 24px rgba(106,176,76,0.4);
+}
+.form-note {
+  font-size: 0.8rem; color: var(--text-muted);
+  margin-top: 0.5rem; line-height: 1.5;
+}
+
+/* SUCCESS */
+.success-box {
+  display: none;
+  border: 1px solid var(--green);
+  background: rgba(74,124,63,0.07);
+  padding: 2.5rem;
+  text-align: center;
+}
+.success-box h3 {
+  font-family: var(--stencil);
+  letter-spacing: 0.12em;
+  font-size: 1.8rem;
+  color: var(--green-bright);
+  margin-bottom: 0.5rem;
+}
+.success-box p { color: var(--text-dim); font-size: 0.95rem; }
+
+/* FOOTER */
+footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 5%;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-logo {
+  font-family: var(--stencil);
+  letter-spacing: 0.15em;
+  font-size: 1.4rem;
+  color: var(--green);
+}
+.footer-links { display: flex; gap: 2rem; list-style: none; }
+.footer-links a {
+  font-size: 0.82rem; color: var(--text-muted);
+  text-decoration: none; letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--green-bright); }
+.footer-copy {
+  font-size: 0.78rem; color: var(--text-muted); letter-spacing: 0.05em;
+}
+
+/* RESPONSIVE */
+@media (max-width: 820px) {
+  .order-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .nav-links { gap: 1.25rem; }
+  .nav-ig { display: none; }
+  .hero h1 { font-size: clamp(3rem, 14vw, 5rem); }
+}
+@media (max-width: 520px) {
+  .nav-links { display: none; }
+  .ig-strip { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- TANK SVG BACKGROUND -->
+<svg class="tank-bg" viewBox="0 0 800 420" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <!-- T-34/T-70 style tank silhouette -->
+  <g fill="#4a7c3f">
+    <!-- tracks -->
+    <rect x="60" y="300" width="580" height="70" rx="35"/>
+    <rect x="80" y="310" width="540" height="50" rx="25" fill="#0a0a0a"/>
+    <!-- road wheels -->
+    <circle cx="130" cy="335" r="28"/><circle cx="130" cy="335" r="16" fill="#0a0a0a"/>
+    <circle cx="210" cy="335" r="28"/><circle cx="210" cy="335" r="16" fill="#0a0a0a"/>
+    <circle cx="290" cy="335" r="28"/><circle cx="290" cy="335" r="16" fill="#0a0a0a"/>
+    <circle cx="370" cy="335" r="28"/><circle cx="370" cy="335" r="16" fill="#0a0a0a"/>
+    <circle cx="450" cy="335" r="28"/><circle cx="450" cy="335" r="16" fill="#0a0a0a"/>
+    <circle cx="530" cy="335" r="28"/><circle cx="530" cy="335" r="16" fill="#0a0a0a"/>
+    <circle cx="610" cy="335" r="28"/><circle cx="610" cy="335" r="16" fill="#0a0a0a"/>
+    <!-- hull -->
+    <path d="M100 300 L120 200 L620 200 L660 300 Z"/>
+    <!-- turret base -->
+    <ellipse cx="360" cy="200" rx="145" ry="22"/>
+    <!-- turret -->
+    <path d="M230 200 L255 120 L465 120 L490 200 Z"/>
+    <!-- turret top detail -->
+    <rect x="290" y="112" width="140" height="16" rx="8"/>
+    <!-- gun barrel -->
+    <rect x="460" y="148" width="220" height="14" rx="7"/>
+    <!-- gun mantlet -->
+    <ellipse cx="468" cy="155" rx="22" ry="18"/>
+    <!-- hatch -->
+    <ellipse cx="330" cy="128" rx="30" ry="14"/>
+    <ellipse cx="330" cy="128" rx="22" ry="10" fill="#0a0a0a"/>
+    <!-- antenna -->
+    <rect x="245" y="60" width="4" height="62"/>
+    <!-- exhaust -->
+    <rect x="118" y="210" width="18" height="50" rx="4"/>
+    <rect x="140" y="215" width="14" height="45" rx="4"/>
+  </g>
+</svg>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">GG<span>Makete</span></a>
+  <ul class="nav-links">
+    <li><a href="#galerija">Galerija</a></li>
+    <li><a href="#kako">Proces</a></li>
+    <li><a href="#porudzbina">Naruči</a></li>
+  </ul>
+  <a href="https://www.instagram.com/3d_makete/" target="_blank" class="nav-ig">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    @3d_makete
+  </a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">Ručna izrada · 3D štampa · Bojenje</div>
+    <h1>GG<br><span class="accent">Makete</span></h1>
+    <p class="hero-sub">Figure i modeli rađeni po vašoj želji. Vojska, vozila, figure, diorami — svaki komad jedinstven i ručno obrađen.</p>
+    <div class="hero-actions">
+      <a href="#galerija" class="btn btn-primary">Pogledaj radove</a>
+      <a href="#porudzbina" class="btn btn-ghost">Naruči model</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GALLERY -->
+<div class="section" id="galerija">
+  <div class="section-label">Portfolio</div>
+  <h2 class="section-title">Radovi</h2>
+  <p class="section-desc">Hover za preview, klik za pun prikaz sa zvukom. Dodaj još videa prema uputstvima u kodu.</p>
+
+  <div class="gallery-grid" id="gallery-grid">
+
+    <!--
+    ============================================================
+    OPCIJA A — lokalni .mp4 fajl (stavi video u isti folder):
+    <div class="gallery-item" onclick="openVideo('video1.mp4','local')">
+      <video src="video1.mp4" muted loop playsinline></video>
+      <div class="play-overlay"><div class="play-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#6ab04c"><polygon points="5,3 19,12 5,21"/></svg>
+      </div></div>
+      <div class="overlay"><span class="overlay-text">Naziv modela</span></div>
+    </div>
+
+    OPCIJA B — YouTube link (kopiraš ID iz linka, npr. youtube.com/watch?v=ABC123):
+    <div class="gallery-item" onclick="openVideo('ABC123','youtube')">
+      <iframe src="https://www.youtube.com/embed/ABC123?autoplay=0&mute=1&controls=0&loop=1" allowfullscreen></iframe>
+      <div class="play-overlay"><div class="play-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#6ab04c"><polygon points="5,3 19,12 5,21"/></svg>
+      </div></div>
+      <div class="overlay"><span class="overlay-text">Naziv modela</span></div>
+    </div>
+    ============================================================
+    -->
+
+    <div class="gallery-item gallery-placeholder">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="1.2"><polygon points="5,3 19,12 5,21"/><rect x="2" y="2" width="20" height="20" rx="2" fill="none"/></svg>
+      <span>Kosovo Diorama</span>
+    </div>
+    <div class="gallery-item gallery-placeholder">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="1.2"><polygon points="5,3 19,12 5,21"/><rect x="2" y="2" width="20" height="20" rx="2" fill="none"/></svg>
+      <span>King Tiger — Resin + AirBrush</span>
+    </div>
+    <div class="gallery-item gallery-placeholder">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="1.2"><polygon points="5,3 19,12 5,21"/><rect x="2" y="2" width="20" height="20" rx="2" fill="none"/></svg>
+      <span>Policijska Brigada 18cm</span>
+    </div>
+    <div class="gallery-item gallery-placeholder">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#4a7c3f" stroke-width="1.2"><polygon points="5,3 19,12 5,21"/><rect x="2" y="2" width="20" height="20" rx="2" fill="none"/></svg>
+      <span>BOV M16 Miloš — Skala 1:35</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">✕ Zatvori</button>
+    <div id="lightbox-content"></div>
+  </div>
+</div>
+
+<!-- INSTAGRAM STRIP -->
+<div class="ig-strip">
+  <div class="ig-strip-left">
+    <div class="ig-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6ab04c" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#6ab04c" stroke="none"/></svg>
+    </div>
+    <div class="ig-strip-text">
+      <p>@3d_makete</p>
+      <span>Više radova na Instagram profilu</span>
+    </div>
+  </div>
+  <a href="https://www.instagram.com/3d_makete/" target="_blank" class="btn btn-ghost">Pogledaj Instagram →</a>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section" id="kako" style="padding-top:5rem;padding-bottom:5rem;">
+  <div class="section-label">Proces</div>
+  <h2 class="section-title">Kako naručiti</h2>
+  <p class="section-desc">Bez komplikacija — popunite formu i javim se u roku od 24h.</p>
+
+  <div class="process-grid">
+    <div class="process-step" data-num="01">
+      <h3>Opišite model</h3>
+      <p>Vojnik, vozilo, figura, diorama — pošaljite opis, referencu ili fotografiju onoga što želite.</p>
+    </div>
+    <div class="process-step" data-num="02">
+      <h3>Dogovor i cena</h3>
+      <p>Javim se sa procenom cene i rokova. Sve po dogovoru, bez skrivenih troškova.</p>
+    </div>
+    <div class="process-step" data-num="03">
+      <h3>Izrada i bojenje</h3>
+      <p>3D štampa, montaža i ručno bojenje prema vašim zahtevima.</p>
+    </div>
+    <div class="process-step" data-num="04">
+      <h3>Isporuka</h3>
+      <p>Kurirska služba na vašu adresu ili lično preuzimanje. Plaćanje unapred ili PayPal.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER FORM -->
+<div class="order-wrap" id="porudzbina">
+<div class="order-inner">
+
+  <div class="order-info">
+    <div class="section-label">Narudžbina</div>
+    <h2>Naruči<br>Svoj Model</h2>
+    <p>Svaki model se radi po narudžbini. Rok izrade zavisi od složenosti — prosek 1 do 3 nedelje.</p>
+
+    <div class="info-block">
+      <h4>▸ Uplata na račun</h4>
+      <p>Domaće banke, avansna uplata po predračunu.</p>
+      <code>Broj računa: ovde unesite vaš broj</code>
+    </div>
+
+    <div class="info-block">
+      <h4>▸ PayPal</h4>
+      <p>Za kupce iz inostranstva i online plaćanje.</p>
+      <code>paypal.me/vašaadresa</code>
+    </div>
+
+    <div class="info-block">
+      <h4>▸ Kontakt</h4>
+      <p>Instagram DM ili email za brži odgovor.</p>
+      <code>@3d_makete</code>
+    </div>
+  </div>
+
+  <div>
+    <div class="form-grid" id="order-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Ime i prezime</label>
+          <input type="text" id="ime" placeholder="Vaše ime">
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" placeholder="vaš@email.com">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Telefon</label>
+          <input type="tel" id="tel" placeholder="+381 ...">
+        </div>
+        <div class="form-group">
+          <label>Grad / zemlja</label>
+          <input type="text" id="grad" placeholder="Npr. Beograd">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tip modela</label>
+        <select id="tip">
+          <option value="">— odaberite kategoriju —</option>
+          <option>Vojnik / figura</option>
+          <option>Tenkovi i vozila</option>
+          <option>Diorama / scena</option>
+          <option>Avion / brod</option>
+          <option>Fantasy / sci-fi figura</option>
+          <option>Nešto drugo (opišite u poruci)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Opis modela i napomene</label>
+        <textarea id="opis" placeholder="Što detaljniji opis: epoha, uniforma, veličina, boje, referentne slike ako imate..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Način plaćanja</label>
+        <div class="payment-select">
+          <input type="radio" name="payment" id="pay-bank" class="pay-option" value="bank" checked>
+          <label for="pay-bank" class="pay-label">
+            <span class="pay-dot"></span> Uplata na račun
+          </label>
+          <input type="radio" name="payment" id="pay-pp" class="pay-option" value="paypal">
+          <label for="pay-pp" class="pay-label">
+            <span class="pay-dot"></span> PayPal
+          </label>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="submitOrder()">Pošalji upit →</button>
+      <p class="form-note">Nisu obavezna polja — možete poslati i samo sa imenom i opisom. Javim se u roku od 24h.</p>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <h3>✓ Primljeno</h3>
+      <p>Upit je zabeležen. Javiću se u roku od 24h na email ili Instagram DM radi dogovora.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">GG Makete</div>
+  <ul class="footer-links">
+    <li><a href="https://www.instagram.com/3d_makete/" target="_blank">Instagram</a></li>
+    <li><a href="#galerija">Galerija</a></li>
+    <li><a href="#porudzbina">Naruči</a></li>
+  </ul>
+  <span class="footer-copy">© 2025 GG Makete</span>
+</footer>
+
+<script>
+// LIGHTBOX
+function openVideo(src, type) {
+  const lb = document.getElementById('lightbox');
+  const content = document.getElementById('lightbox-content');
+  if (type === 'local') {
+    content.innerHTML = `<video src="${src}" controls autoplay style="max-width:85vw;max-height:82vh;display:block;border:1px solid var(--border)"></video>`;
+  } else if (type === 'youtube') {
+    content.innerHTML = `<iframe src="https://www.youtube.com/embed/${src}?autoplay=1" allowfullscreen allow="autoplay" style="width:80vw;aspect-ratio:16/9;max-width:900px;border:1px solid var(--border)"></iframe>`;
+  }
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  const lb = document.getElementById('lightbox');
+  lb.classList.remove('open');
+  document.getElementById('lightbox-content').innerHTML = '';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// Auto-play local videos on hover
+document.querySelectorAll('.gallery-item video').forEach(v => {
+  v.parentElement.addEventListener('mouseenter', () => v.play());
+  v.parentElement.addEventListener('mouseleave', () => { v.pause(); v.currentTime = 0; });
+});
+
+// ORDER FORM
+function submitOrder() {
+  const ime = document.getElementById('ime').value.trim();
+  const opis = document.getElementById('opis').value.trim();
+  if (!ime && !opis) {
+    document.getElementById('ime').focus();
+    document.getElementById('ime').style.borderColor = '#c85c2a';
+    return;
+  }
+  document.getElementById('order-form').style.display = 'none';
+  document.getElementById('success-box').style.display = 'block';
+}
+
+// Active nav highlight
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#'+current ? 'var(--green-bright)' : '';
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
